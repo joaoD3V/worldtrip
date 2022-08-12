@@ -7,6 +7,18 @@ const customTheme = {
         bg: 'whiteAlpha.50',
         color: 'gray.700',
       },
+      '.swiper-button-next, .swiper-button-prev': {
+        color: 'yellow.500',
+      },
+      '.swiper-pagination-bullet': {
+        width: '16px',
+        height: '16px',
+        bg: 'gray.400',
+        opacity: 1,
+      },
+      '.swiper-pagination-bullet-active': {
+        bg: 'yellow.500',
+      },
     },
   },
   colors: {
