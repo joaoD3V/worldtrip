@@ -1,4 +1,4 @@
-import { Box, Flex, IconButton } from '@chakra-ui/react';
+import { Box, Flex, IconButton, useBreakpointValue } from '@chakra-ui/react';
 import { RiArrowLeftSLine } from 'react-icons/ri';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -8,8 +8,13 @@ export type HeaderProps = {
 };
 
 export function Header({ backButton = false }: HeaderProps) {
+  const isWideVersion = useBreakpointValue({
+    base: false,
+    lg: true,
+  });
+
   return (
-    <Box as="header" w="100%" h="100px">
+    <Box as="header" w="100%" h={isWideVersion ? '100px' : '50px'}>
       <Flex
         maxW={1120}
         align="center"
@@ -22,7 +27,7 @@ export function Header({ backButton = false }: HeaderProps) {
           <Link href="/" passHref>
             <IconButton
               as="a"
-              icon={<RiArrowLeftSLine fontSize={32} />}
+              icon={<RiArrowLeftSLine fontSize={isWideVersion ? 32 : 16} />}
               aria-label="Back to Home Page"
               bg="transparent"
               position="absolute"
@@ -31,7 +36,11 @@ export function Header({ backButton = false }: HeaderProps) {
           </Link>
         )}
         <Box m="0 auto">
-          <Image src="/img/logo.svg" width={184} height={46} />
+          <Image
+            src="/img/logo.svg"
+            width={isWideVersion ? 184 : 82}
+            height={isWideVersion ? 46 : 20}
+          />
         </Box>
       </Flex>
     </Box>

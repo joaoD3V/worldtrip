@@ -3,7 +3,14 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
-import { Box, Flex, Heading, Text, VStack } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  Heading,
+  Text,
+  useBreakpointValue,
+  VStack,
+} from '@chakra-ui/react';
 import { A11y, Navigation, Pagination } from 'swiper';
 import Link from 'next/link';
 
@@ -21,6 +28,11 @@ export type SliderProps = {
 };
 
 export function Slider({ banners }: SliderProps) {
+  const isWideVersion = useBreakpointValue({
+    base: false,
+    lg: true,
+  });
+
   return (
     <Swiper
       modules={[Navigation, Pagination, A11y]}
@@ -34,7 +46,7 @@ export function Slider({ banners }: SliderProps) {
             <Box
               bgColor="blackAlpha.900"
               w="100%"
-              h={450}
+              h={isWideVersion ? 450 : 250}
               position="relative"
               cursor="pointer"
             >
@@ -64,16 +76,16 @@ export function Slider({ banners }: SliderProps) {
                   <Heading
                     color="gray.50"
                     fontWeight={700}
-                    fontSize={48}
-                    lineHeight="72px"
+                    fontSize={isWideVersion ? 48 : 24}
+                    lineHeight={isWideVersion ? '72px' : '36px'}
                   >
                     {banner.text.title}
                   </Heading>
                   <Text
                     color="gray.100"
                     fontWeight={700}
-                    fontSize={24}
-                    lineHeight="36px"
+                    fontSize={isWideVersion ? 24 : 14}
+                    lineHeight={isWideVersion ? '36px' : '21px'}
                   >
                     {banner.text.subtitle}
                   </Text>

@@ -6,12 +6,14 @@ import {
   Icon,
   SimpleGrid,
   Text,
+  Tooltip,
+  useBreakpointValue,
   VStack,
 } from '@chakra-ui/react';
 import { GetStaticPaths, GetStaticProps } from 'next';
 import { Header } from '../../components/Header';
-import { europe } from '../../mocks/continents/europe';
 import { AiOutlineInfoCircle } from 'react-icons/ai';
+import { api } from '../../services/api';
 
 export type City = {
   img: string;
@@ -40,11 +42,21 @@ type ContinentPageProps = {
 };
 
 export default function Continent({ continent }: ContinentPageProps) {
+  const isWideVersion = useBreakpointValue({
+    base: false,
+    lg: true,
+  });
+
   return (
     <Flex direction="column" minH="100vh">
       <Header backButton />
 
-      <Box bgColor="blackAlpha.900" w="100%" h={500} position="relative">
+      <Box
+        bgColor="blackAlpha.900"
+        w="100%"
+        h={isWideVersion ? 500 : 150}
+        position="relative"
+      >
         <Box
           w="100%"
           h="100%"
@@ -73,65 +85,87 @@ export default function Continent({ continent }: ContinentPageProps) {
             bottom={59}
             left={0}
             fontWeight={600}
-            fontSize={48}
-            lineHeight="72px"
+            fontSize={isWideVersion ? 48 : 28}
+            lineHeight={isWideVersion ? '72px' : '42px'}
             color="gray.50"
+            pl={isWideVersion ? 0 : '20px'}
           >
             {continent.title}
           </Heading>
         </Box>
       </Box>
 
-      <Box maxW={1120} w="100%" m="0 auto" mt="20" mb="40px">
-        <Flex w="100%" align="center" justify="space-between">
+      <Box
+        maxW={1120}
+        w="100%"
+        m="0 auto"
+        mt={isWideVersion ? '20' : '6'}
+        mb="40px"
+        px={isWideVersion ? 0 : 4}
+      >
+        <Flex
+          w="100%"
+          flexDir={isWideVersion ? 'row' : 'column'}
+          align="center"
+          justify="space-between"
+          gap={isWideVersion ? '70px' : 4}
+        >
           <Box
-            as={Text}
             dangerouslySetInnerHTML={{ __html: continent.description }}
-            fontSize={24}
-            lineHeight="36px"
+            fontSize={isWideVersion ? 24 : 14}
+            lineHeight={isWideVersion ? '36px' : '21px'}
             textAlign="justify"
             color="gray.700"
             maxW={600}
           />
 
-          {continent.infos.map((info, index) => (
-            <Flex key={info.title} flexDir="column">
-              <VStack spacing={0}>
-                <Text
-                  color="yellow.500"
-                  fontSize={48}
-                  fontWeight={600}
-                  lineHeight="72px"
-                >
-                  {info.number}
-                </Text>
-                <Text
-                  color="gray.700"
-                  fontSize={24}
-                  fontWeight={600}
-                  lineHeight="36px"
-                >
-                  {info.title}
-                  {index === 2 && (
-                    <Icon
-                      as={AiOutlineInfoCircle}
-                      fontSize={16}
-                      color="gray.400"
-                      ml={1}
-                    />
-                  )}
-                </Text>
-              </VStack>
-            </Flex>
-          ))}
+          <Flex align="center" justify="space-between" w="100%">
+            {continent.infos.map((info, index) => (
+              <Flex key={info.title} flexDir="column">
+                <VStack spacing={0}>
+                  <Text
+                    color="yellow.500"
+                    fontSize={isWideVersion ? 48 : 24}
+                    fontWeight={600}
+                    lineHeight={isWideVersion ? '72px' : '36px'}
+                  >
+                    {info.number}
+                  </Text>
+                  <Text
+                    color="gray.700"
+                    fontSize={isWideVersion ? 24 : 18}
+                    fontWeight={600}
+                    lineHeight={isWideVersion ? '36px' : '27px'}
+                  >
+                    {info.title}
+                    {index === 2 && (
+                      <Tooltip
+                        label="A lista de cidades será atualizada"
+                        aria-label="A tooltip"
+                      >
+                        <span>
+                          <Icon
+                            as={AiOutlineInfoCircle}
+                            fontSize={16}
+                            color="gray.400"
+                            ml={1}
+                          />
+                        </span>
+                      </Tooltip>
+                    )}
+                  </Text>
+                </VStack>
+              </Flex>
+            ))}
+          </Flex>
         </Flex>
 
         <Heading
-          fontSize={36}
+          fontSize={isWideVersion ? 36 : 24}
           fontWeight={500}
           color="gray.700"
-          lineHeight="54px"
-          mt={20}
+          lineHeight={isWideVersion ? '54px' : '36px'}
+          mt={isWideVersion ? 20 : '32px'}
         >
           Cidades + 100
         </Heading>
@@ -147,6 +181,7 @@ export default function Continent({ continent }: ContinentPageProps) {
               borderStyle="solid"
               borderColor="yellow.500"
               borderRadius="4"
+              m={isWideVersion ? 0 : '0 auto'}
             >
               <Box
                 w="100%"
@@ -204,17 +239,12 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const slug = params?.slug;
-  let continent: ContinentProps = {
-    img: '',
-    title: '',
-    description: '',
-    infos: [],
-    cities: [],
-  };
 
-  if (slug === 'europa') {
-    continent = europe;
-  }
+  const route = slug === 'europa' ? 'europe' : 'southAmerica';
+
+  const response = await api.get<ContinentProps>(`/${route}`);
+
+  const continent = response.data;
 
   return {
     props: {
